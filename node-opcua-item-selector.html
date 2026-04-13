@@ -1,0 +1,283 @@
+<script type="text/javascript">
+
+
+
+    /*
+    ToDo:
+    - Labeliste erstellen
+
+
+    */
+
+    RED.nodes.registerType('OpcUa-ItemSelector', {
+        category: 'opcua',
+        color: "#3FADB5",
+        defaults: {
+            endpoint: {value: "", required: false, type: "OpcUa-Endpoint"},   // required: true
+            browseSelect: {value: ""},
+            browseList: {value: []},
+            parents: {value: {}},
+            typs: {value: {}},
+            labels: {value: {}},
+            values: {value: {}},
+            //currentEndpointURL: "",
+            item: {value: ""},
+            datatype: {value: ""},
+            topic: {value: ""},
+            items: {value: []},
+            name: {value: ""}
+        },
+        inputs: 1,
+        outputs: 1,
+        align: "right",
+        icon: "debug.svg", //"opcuanodeLogo.png",
+        label: function () {
+            let browseSelectRaw=this.browseSelect.split(";datatype")[0] // eliminate datatype
+            return this.item || "Item: "+this.labels[browseSelectRaw]||""; //"OPC UA Item Selector";
+        },
+        labelStyle: function () {
+            return this.item ? "node_label_italic" : "";
+        },
+        oneditprepare: function() {
+
+            var node=this;
+     
+            console.log("node",node);
+            $("#node-id").html(node.id);
+
+            function getLabel(item,labels)
+            {
+                item=item.split(";datatype")[0] // eliminate datatype
+                if(item=="---------"){return item}
+                if(item=="ns=0;i=85"){return "Root"}
+
+                if(typeof node.typs[item]!="undefined")
+                { 
+                    var varName;
+                    if(node.typs[item].key==2)
+                    {
+                        return labels[item]+" (Variable)"
+                    }else
+                    {
+                        return labels[item]+" ("+node.typs[item].key+")"
+                    }
+                }
+                return labels[item]
+            }
+
+            function createSelectList(list,labels)
+            {
+                $('#node-input-browseSelect').empty(); 
+                list.forEach ((item, index) => {
+                    $('#node-input-browseSelect').append($('<option>', {
+                                value: item, //JSON.stringify({item: item, parent: "test"}), // item
+                                text: getLabel(item,labels)
+                            }));
+                });
+            }
+
+            setTimeout(() => {
+                $( "#node-input-endpoint").change(function() {
+                    $('#node-input-browseSelect').empty()
+                });
+            }, 2000);
+            
+            $('#node-browse-button').click(function() {
+                console.log('send request');
+                var item=$('#node-input-browseSelect').val();
+                if(typeof item=="undefined"||item==""||item==null){item="ns=0;i=85"}
+                if(item=="---------" || typeof RED.nodes.node($("#node-input-endpoint").val())=="undefined"){return}
+
+                
+                var oldItems=$('#node-input-browseSelect option').map(function() {return this.value;}).get();
+                console.log(item);
+                //var endpoint=JSON.parse(JSON.stringify(RED.nodes.node($("#node-input-endpoint").val())));
+                
+                var endpoint=RED.nodes.node($("#node-input-endpoint").val());
+                var params={"item": item, "oldItems": oldItems, "endpoint": $("#node-input-endpoint").val(),"parents":node.parents,"typs":node.typs,"labels":node.labels, "values":node.values};
+                //params=simpleStringify(params);
+                //params=JSON.stringify(params);        
+                console.log(params);
+                $.ajax({
+                    url: '/opcua',
+                    type: 'GET',
+                    data: params,  //{payload: {actiontype: 'browse', root: item}}
+                    success: function(data) {
+                        console.log("data before parse",data);
+                        //try {
+                            if(data.length==0){return}
+                            var data=JSON.parse(data);
+                            console.log('data:',data);
+                            node.parents=data.parents;
+                            node.typs=data.typs;
+                            node.labels=data.labels;
+                            node.values=data.values;
+                            var items=data.items;
+                            //node.currentEndpointURL=data.endpoint;
+                            if(items.length==0){return}
+                            $('#node-input-browseSelect').empty();     
+                            console.log("node.typs",node.typs);    
+                            for (let i = 0; i < items.length; i++)
+                            {
+                                var item=items[i];
+                                console.log("item-before",item);
+                                if(typeof node.typs[item]!="undefined")
+                                {
+                                    item=item+";datatype="+node.typs[item].typeName;
+                                }
+                                console.log("item-after",item);
+                                $('#node-input-browseSelect').append($('<option>', {
+                                    value: item, //JSON.stringify({item: item, parent: "test"}), // item
+                                    text:  getLabel(item,node.labels)          
+                                    
+                                }));
+                            }  // end-for
+                        /*
+                        } catch (error) {
+                            console.log(error);
+                        }
+                        */
+              
+                    }
+                }); // end-ajax
+
+            }); // end-click
+
+            // start sequence
+            if(typeof this.browseList!="undefined" && this.browseList.length!=0)
+            {
+                createSelectList(this.browseList,this.labels);
+            }
+            if(typeof this.browseSelect!="undefined" && this.browseSelect.length!=0)
+            {
+                $('#node-input-browseSelect').val(this.browseSelect);
+            }
+            //
+
+
+
+        }, // end-oneditprepare
+        oneditsave: function() {
+            this.browseList=$('#node-input-browseSelect option').map(function() {return this.value;}).get();
+            
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="OpcUa-ItemSelector">
+    <style>
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            font-family: var(--red-ui-primary-font);
+            visibility: hidden;
+            width: auto;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 150%;
+            left: 50%;
+            margin-left: -75px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+    </style>
+
+    <div id="node-id" style="display: none;"></div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    
+    <div class="form-row" style="min-width:640px">
+        <label for="node-input-endpoint"><i class="icon-bookmark"></i> Endpoint</label>
+        <input type="text" id="node-input-endpoint">
+    </div>
+
+    <div id="basement" class="form-row" style="min-width:640px">
+        <label for="node-input-browseSelect"><i class="icon-search"></i> Item</label>
+        <div style="width: 70%; display: inline-flex;">
+            <div class="tooltip">
+                <a class="red-ui-button fa fa-code-fork" 
+                    style="margin-left: 0px; margin-right: 5px;" 
+                    onclick="const v=$('#node-id').html(); if(navigator.clipboard && window.isSecureContext){navigator.clipboard.writeText(v).then(()=>{$('#myTooltip1').html('Copied: '+v)})}else{const t=document.createElement('textarea');t.value=v;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);$('#myTooltip1').html('Copied: '+v)}"
+                    onmouseout="$('#myTooltip1').html('Copy node-id to clipboard for relative bindings.')">
+                        <span class="tooltiptext" id="myTooltip1">Copy node-id to clipboard for relative bindings.</span>
+                    </a>
+            </div>
+            <div class="tooltip">
+                <a class="red-ui-button fa fa-clipboard" 
+                    style="margin-left: 0px; margin-right: 5px;" 
+                    onclick="const v=$('#node-input-browseSelect').val(); if(navigator.clipboard && window.isSecureContext){navigator.clipboard.writeText(v).then(()=>{$('#myTooltip').html('Copied: '+v)})}else{const t=document.createElement('textarea');t.value=v;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);$('#myTooltip').html('Copied: '+v)}" 
+                    onmouseout="$('#myTooltip').html('Copy item-id to clipboard for absolute bindings.')">  
+                        <span class="tooltiptext" id="myTooltip">Copy item-id to clipboard for absolute bindings.</span>
+                </a>
+            </div>
+            <select id="node-input-browseSelect" style="flex-grow: 1;"> <!-- ng-model="item" ng-options="items in msg.payload" -->
+                <!-- <option value="ns=0;i=85">-- Objects Root --</option> -->
+            </select>
+            <a id="node-browse-button" class="red-ui-button" style="margin-left: 10px;">Browse</a>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-search"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="OPC UA Item Selector">
+    </div>
+
+
+
+
+</script>
+
+<script type="text/html" data-help-name="OpcUa-ItemSelector">
+    <p>A node for selecting items from an opc-ua server via live-browsing.</p>
+
+    
+    <ul>
+        <li>
+            <a class="red-ui-button" style="color: var(--red-ui-text-color-code) !important; transform: scale(0.7);margin-left:-15px;margin-right:-5px">Browse</a>    
+            <span> Use this button for finding the right item </span>
+        </li>
+        <li>
+            <code><i class="fa fa-code-fork" style="margin:4px"></i></code>
+            <span>Copy item-id to clipboard for absolute bindings. These bindings are made with a flow-variable that you can use after the opcua-client for instance in the switch-node with the statement flow.copiedID for msg.topic.</span>
+        </li>
+        <li>
+            <code><i class="fa fa-clipboard" style="margin:4px"></i></code>
+            <span>Copy item-id to clipboard for absolute bindings. You can use it for instance in the switch-node after the opcua-client for msg.topic.</span>
+        </li>
+        <li>
+            <code>Node-Output: </code>
+            <ul>
+                <li>msg.topic: item-id with datatype</li>
+                <li>msg.label: item-id used for instance for the gauge-ui-element</li>
+                <li>msg.dataType: item-dataType</li>
+            </ul>
+        </li>
+      </ul> 
+</script>
