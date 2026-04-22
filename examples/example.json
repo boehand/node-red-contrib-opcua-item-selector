@@ -1,0 +1,416 @@
+[
+    {
+        "id": "f28f56f80a195260",
+        "type": "OpcUa-Server",
+        "z": "cb5c1be8b2e15259",
+        "port": "53880",
+        "name": "",
+        "endpoint": "",
+        "usersFile": "",
+        "nodesetDir": "",
+        "autoAcceptUnknownCertificate": true,
+        "registerToDiscovery": false,
+        "constructDefaultAddressSpace": true,
+        "allowAnonymous": true,
+        "endpointNone": true,
+        "endpointSign": true,
+        "endpointSignEncrypt": true,
+        "endpointBasic128Rsa15": true,
+        "endpointBasic256": true,
+        "endpointBasic256Sha256": true,
+        "maxNodesPerBrowse": 0,
+        "maxNodesPerHistoryReadData": 0,
+        "maxNodesPerHistoryReadEvents": 0,
+        "maxNodesPerHistoryUpdateData": 0,
+        "maxNodesPerRead": 0,
+        "maxNodesPerWrite": 0,
+        "maxNodesPerMethodCall": 0,
+        "maxNodesPerRegisterNodes": 0,
+        "maxNodesPerNodeManagement": 0,
+        "maxMonitoredItemsPerCall": 0,
+        "maxNodesPerHistoryUpdateEvents": 0,
+        "maxNodesPerTranslateBrowsePathsToNodeIds": 0,
+        "maxConnectionsPerEndpoint": 20,
+        "maxMessageSize": 4096,
+        "maxBufferSize": 4096,
+        "maxSessions": 20,
+        "x": 340,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2bc4727d853c858c",
+        "type": "OpcUa-ItemSelector",
+        "z": "cb5c1be8b2e15259",
+        "endpoint": "f5e7b10994252f31",
+        "browseSelect": "ns=1;s=Counter;datatype=UInt16",
+        "browseList": [
+            "ns=0;i=85",
+            "---------",
+            "ns=1;s=VendorName",
+            "---------",
+            "ns=1;s=Equipment",
+            "ns=1;s=PhysicalAssets",
+            "ns=1;s=MyVariable2;datatype=Double",
+            "ns=1;s=FreeMemory;datatype=Double",
+            "ns=1;s=Counter;datatype=UInt16",
+            "ns=1;s=VendorName-Bark"
+        ],
+        "parents": {
+            "ns=0;i=2253": "ns=0;i=85",
+            "ns=0;i=23470": "ns=0;i=85",
+            "ns=2;i=5001": "ns=0;i=85",
+            "ns=2;i=6078": "ns=0;i=85",
+            "ns=2;i=6094": "ns=0;i=85",
+            "ns=1;s=VendorName": "ns=0;i=85",
+            "ns=1;s=Equipment": "ns=1;s=VendorName",
+            "ns=1;s=PhysicalAssets": "ns=1;s=VendorName",
+            "ns=1;s=MyVariable2": "ns=1;s=VendorName",
+            "ns=1;s=FreeMemory": "ns=1;s=VendorName",
+            "ns=1;s=Counter": "ns=1;s=VendorName",
+            "ns=1;s=VendorName-Bark": "ns=1;s=VendorName"
+        },
+        "typs": {
+            "ns=1;s=MyVariable2": {
+                "type": 11,
+                "key": 2,
+                "typeName": "Double"
+            },
+            "ns=1;s=FreeMemory": {
+                "type": 11,
+                "key": 2,
+                "typeName": "Double"
+            },
+            "ns=1;s=Counter": {
+                "type": 5,
+                "key": 2,
+                "typeName": "UInt16"
+            }
+        },
+        "labels": {
+            "ns=0;i=2253": "Server",
+            "ns=0;i=23470": "Aliases",
+            "ns=2;i=5001": "DeviceSet",
+            "ns=2;i=6078": "NetworkSet",
+            "ns=2;i=6094": "DeviceTopology",
+            "ns=1;s=VendorName": "VendorName",
+            "ns=1;s=Equipment": "Equipment",
+            "ns=1;s=PhysicalAssets": "Physical Assets",
+            "ns=1;s=MyVariable2": "MyVariable2",
+            "ns=1;s=FreeMemory": "FreeMemory",
+            "ns=1;s=Counter": "Variables Counter",
+            "ns=1;s=VendorName-Bark": "Bark"
+        },
+        "values": {
+            "ns=1;s=MyVariable2": 10,
+            "ns=1;s=FreeMemory": 51.52372106330419,
+            "ns=1;s=Counter": 1
+        },
+        "item": "",
+        "datatype": "",
+        "topic": "",
+        "items": [],
+        "name": "",
+        "x": 350,
+        "y": 340,
+        "wires": [
+            [
+                "c90eebc785870878"
+            ]
+        ]
+    },
+    {
+        "id": "c90eebc785870878",
+        "type": "OpcUa-Client",
+        "z": "cb5c1be8b2e15259",
+        "endpoint": "f5e7b10994252f31",
+        "action": "subscribe",
+        "deadbandtype": "a",
+        "deadbandvalue": 1,
+        "time": "1",
+        "timeUnit": "s",
+        "certificate": "n",
+        "localfile": "",
+        "localkeyfile": "",
+        "securitymode": "None",
+        "securitypolicy": "None",
+        "useTransport": false,
+        "maxChunkCount": 1,
+        "maxMessageSize": 8192,
+        "receiveBufferSize": 8192,
+        "sendBufferSize": 8192,
+        "setstatusandtime": false,
+        "keepsessionalive": false,
+        "name": "Subscribe",
+        "applicationName": "",
+        "applicationUri": "",
+        "x": 540,
+        "y": 340,
+        "wires": [
+            [
+                "112fae2959928205"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "1a6313c49402c4a8",
+        "type": "inject",
+        "z": "cb5c1be8b2e15259",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 340,
+        "wires": [
+            [
+                "2bc4727d853c858c"
+            ]
+        ]
+    },
+    {
+        "id": "112fae2959928205",
+        "type": "switch",
+        "z": "cb5c1be8b2e15259",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "ns=1;s=Counter;datatype=UInt16",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 690,
+        "y": 340,
+        "wires": [
+            [
+                "02ca46789b5a08e7"
+            ]
+        ]
+    },
+    {
+        "id": "02ca46789b5a08e7",
+        "type": "debug",
+        "z": "cb5c1be8b2e15259",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": false,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 840,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "e94d1559756cc0df",
+        "type": "OpcUa-ItemSelector",
+        "z": "cb5c1be8b2e15259",
+        "endpoint": "f5e7b10994252f31",
+        "browseSelect": "ns=1;s=Counter;datatype=UInt16",
+        "browseList": [
+            "ns=0;i=85",
+            "---------",
+            "ns=1;s=VendorName",
+            "---------",
+            "ns=1;s=Equipment",
+            "ns=1;s=PhysicalAssets",
+            "ns=1;s=MyVariable2;datatype=Double",
+            "ns=1;s=FreeMemory;datatype=Double",
+            "ns=1;s=Counter;datatype=UInt16",
+            "ns=1;s=VendorName-Bark"
+        ],
+        "parents": {
+            "ns=0;i=2253": "ns=0;i=85",
+            "ns=0;i=23470": "ns=0;i=85",
+            "ns=2;i=5001": "ns=0;i=85",
+            "ns=2;i=6078": "ns=0;i=85",
+            "ns=2;i=6094": "ns=0;i=85",
+            "ns=1;s=VendorName": "ns=0;i=85",
+            "ns=1;s=Equipment": "ns=1;s=VendorName",
+            "ns=1;s=PhysicalAssets": "ns=1;s=VendorName",
+            "ns=1;s=MyVariable2": "ns=1;s=VendorName",
+            "ns=1;s=FreeMemory": "ns=1;s=VendorName",
+            "ns=1;s=Counter": "ns=1;s=VendorName",
+            "ns=1;s=VendorName-Bark": "ns=1;s=VendorName"
+        },
+        "typs": {
+            "ns=1;s=MyVariable2": {
+                "type": 11,
+                "key": 2,
+                "typeName": "Double"
+            },
+            "ns=1;s=FreeMemory": {
+                "type": 11,
+                "key": 2,
+                "typeName": "Double"
+            },
+            "ns=1;s=Counter": {
+                "type": 5,
+                "key": 2,
+                "typeName": "UInt16"
+            }
+        },
+        "labels": {
+            "ns=0;i=2253": "Server",
+            "ns=0;i=23470": "Aliases",
+            "ns=2;i=5001": "DeviceSet",
+            "ns=2;i=6078": "NetworkSet",
+            "ns=2;i=6094": "DeviceTopology",
+            "ns=1;s=VendorName": "VendorName",
+            "ns=1;s=Equipment": "Equipment",
+            "ns=1;s=PhysicalAssets": "Physical Assets",
+            "ns=1;s=MyVariable2": "MyVariable2",
+            "ns=1;s=FreeMemory": "FreeMemory",
+            "ns=1;s=Counter": "Variables Counter",
+            "ns=1;s=VendorName-Bark": "Bark"
+        },
+        "values": {
+            "ns=1;s=MyVariable2": 10,
+            "ns=1;s=FreeMemory": 51.52372106330419,
+            "ns=1;s=Counter": 1
+        },
+        "item": "",
+        "datatype": "",
+        "topic": "",
+        "items": [],
+        "name": "",
+        "x": 350,
+        "y": 460,
+        "wires": [
+            [
+                "bd06668727bde954"
+            ]
+        ]
+    },
+    {
+        "id": "bd06668727bde954",
+        "type": "OpcUa-Client",
+        "z": "cb5c1be8b2e15259",
+        "endpoint": "f5e7b10994252f31",
+        "action": "write",
+        "deadbandtype": "a",
+        "deadbandvalue": 1,
+        "time": 10,
+        "timeUnit": "s",
+        "certificate": "n",
+        "localfile": "",
+        "localkeyfile": "",
+        "securitymode": "None",
+        "securitypolicy": "None",
+        "useTransport": false,
+        "maxChunkCount": 1,
+        "maxMessageSize": 8192,
+        "receiveBufferSize": 8192,
+        "sendBufferSize": 8192,
+        "setstatusandtime": false,
+        "keepsessionalive": false,
+        "name": "Write",
+        "applicationName": "",
+        "applicationUri": "",
+        "x": 530,
+        "y": 460,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "239cacdea1968ca7",
+        "type": "inject",
+        "z": "cb5c1be8b2e15259",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "5",
+        "payloadType": "num",
+        "x": 150,
+        "y": 440,
+        "wires": [
+            [
+                "e94d1559756cc0df"
+            ]
+        ]
+    },
+    {
+        "id": "a4d34ded0a320603",
+        "type": "inject",
+        "z": "cb5c1be8b2e15259",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "10",
+        "payloadType": "num",
+        "x": 153.1999969482422,
+        "y": 503.1999816894531,
+        "wires": [
+            [
+                "e94d1559756cc0df"
+            ]
+        ]
+    },
+    {
+        "id": "f5e7b10994252f31",
+        "type": "OpcUa-Endpoint",
+        "name": "",
+        "endpoint": "opc.tcp://localhost:53880",
+        "secpol": "None",
+        "secmode": "None",
+        "none": true,
+        "login": false,
+        "usercert": false,
+        "usercertificate": "",
+        "userprivatekey": ""
+    },
+    {
+        "id": "cd03bcfb8314b872",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-opcua": "0.2.350",
+            "node-red-contrib-opcua-item-selector": "1.0.0"
+        }
+    }
+]
