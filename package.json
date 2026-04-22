@@ -1,6 +1,6 @@
 {
   "name": "@stfi/node-red-contrib-opcua-item-selector",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Node-RED node for selecting items from an opcua-server via live-browsing.",
   "author": "Andreas Böhm",
   "organization": "STFI, Chemnitz (Germany)",
