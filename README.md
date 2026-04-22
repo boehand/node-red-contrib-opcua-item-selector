@@ -20,4 +20,4 @@ The `OpcUa-ItemSelector` node has the following configuration options:
 
 ### Video of the functionalities
 
-[![Video of the functionalities](https://img.youtube.com/vi/cqTjIsY-A-0?si=3fQ0V7gKmC2VgkDs/0.jpg)](https://www.youtube.com/watch?v=cqTjIsY-A-0?si=3fQ0V7gKmC2VgkDs)
+[![Video of the functionalities](https://img.youtube.com/vi/cqTjIsY-A-0/maxresdefault.jpg)](https://youtu.be/cqTjIsY-A-0)
