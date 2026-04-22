@@ -1,5 +1,5 @@
 {
-  "name": "node-red-contrib-opcua-item-selector",
+  "name": "@stfi/node-red-contrib-opcua-item-selector",
   "version": "1.0.0",
   "description": "A Node-RED node for selecting items from an opcua-server via live-browsing.",
   "author": "Andreas Böhm",
