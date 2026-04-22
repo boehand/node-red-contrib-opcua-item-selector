@@ -1,14 +1,5 @@
 <script type="text/javascript">
 
-
-
-    /*
-    ToDo:
-    - Labeliste erstellen
-
-
-    */
-
     RED.nodes.registerType('OpcUa-ItemSelector', {
         category: 'opcua',
         color: "#3FADB5",
@@ -20,7 +11,6 @@
             typs: {value: {}},
             labels: {value: {}},
             values: {value: {}},
-            //currentEndpointURL: "",
             item: {value: ""},
             datatype: {value: ""},
             topic: {value: ""},
@@ -30,7 +20,7 @@
         inputs: 1,
         outputs: 1,
         align: "right",
-        icon: "debug.svg", //"opcuanodeLogo.png",
+        icon: "debug.svg",
         label: function () {
             let browseSelectRaw=this.browseSelect.split(";datatype")[0] // eliminate datatype
             return this.item || "Item: "+this.labels[browseSelectRaw]||""; //"OPC UA Item Selector";
@@ -41,8 +31,6 @@
         oneditprepare: function() {
 
             var node=this;
-     
-            console.log("node",node);
             $("#node-id").html(node.id);
 
             function getLabel(item,labels)
@@ -70,7 +58,7 @@
                 $('#node-input-browseSelect').empty(); 
                 list.forEach ((item, index) => {
                     $('#node-input-browseSelect').append($('<option>', {
-                                value: item, //JSON.stringify({item: item, parent: "test"}), // item
+                                value: item,
                                 text: getLabel(item,labels)
                             }));
                 });
@@ -83,60 +71,44 @@
             }, 2000);
             
             $('#node-browse-button').click(function() {
-                console.log('send request');
                 var item=$('#node-input-browseSelect').val();
                 if(typeof item=="undefined"||item==""||item==null){item="ns=0;i=85"}
                 if(item=="---------" || typeof RED.nodes.node($("#node-input-endpoint").val())=="undefined"){return}
-
-                
                 var oldItems=$('#node-input-browseSelect option').map(function() {return this.value;}).get();
-                console.log(item);
-                //var endpoint=JSON.parse(JSON.stringify(RED.nodes.node($("#node-input-endpoint").val())));
-                
                 var endpoint=RED.nodes.node($("#node-input-endpoint").val());
                 var params={"item": item, "oldItems": oldItems, "endpoint": $("#node-input-endpoint").val(),"parents":node.parents,"typs":node.typs,"labels":node.labels, "values":node.values};
-                //params=simpleStringify(params);
-                //params=JSON.stringify(params);        
-                console.log(params);
                 $.ajax({
                     url: '/opcua',
                     type: 'GET',
                     data: params,  //{payload: {actiontype: 'browse', root: item}}
                     success: function(data) {
-                        console.log("data before parse",data);
-                        //try {
+                        try {
                             if(data.length==0){return}
                             var data=JSON.parse(data);
-                            console.log('data:',data);
+                            //console.log('data:',data);
                             node.parents=data.parents;
                             node.typs=data.typs;
                             node.labels=data.labels;
                             node.values=data.values;
                             var items=data.items;
-                            //node.currentEndpointURL=data.endpoint;
                             if(items.length==0){return}
-                            $('#node-input-browseSelect').empty();     
-                            console.log("node.typs",node.typs);    
+                            $('#node-input-browseSelect').empty();      
                             for (let i = 0; i < items.length; i++)
                             {
                                 var item=items[i];
-                                console.log("item-before",item);
                                 if(typeof node.typs[item]!="undefined")
                                 {
                                     item=item+";datatype="+node.typs[item].typeName;
                                 }
-                                console.log("item-after",item);
                                 $('#node-input-browseSelect').append($('<option>', {
-                                    value: item, //JSON.stringify({item: item, parent: "test"}), // item
+                                    value: item,
                                     text:  getLabel(item,node.labels)          
                                     
                                 }));
                             }  // end-for
-                        /*
                         } catch (error) {
                             console.log(error);
                         }
-                        */
               
                     }
                 }); // end-ajax
@@ -153,8 +125,6 @@
                 $('#node-input-browseSelect').val(this.browseSelect);
             }
             //
-
-
 
         }, // end-oneditprepare
         oneditsave: function() {
@@ -210,7 +180,7 @@
     <div id="node-id" style="display: none;"></div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <input type="text" id="node-input-name" placeholder="OPC UA Item Selector">
     </div>
     
     <div class="form-row" style="min-width:640px">
@@ -237,18 +207,11 @@
                         <span class="tooltiptext" id="myTooltip">Copy item-id to clipboard for absolute bindings.</span>
                 </a>
             </div>
-            <select id="node-input-browseSelect" style="flex-grow: 1;"> <!-- ng-model="item" ng-options="items in msg.payload" -->
-                <!-- <option value="ns=0;i=85">-- Objects Root --</option> -->
+            <select id="node-input-browseSelect" style="flex-grow: 1;">
             </select>
             <a id="node-browse-button" class="red-ui-button" style="margin-left: 10px;">Browse</a>
         </div>
     </div>
-
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-search"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="OPC UA Item Selector">
-    </div>
-
 
 
 
@@ -265,7 +228,7 @@
         </li>
         <li>
             <code><i class="fa fa-code-fork" style="margin:4px"></i></code>
-            <span>Copy item-id to clipboard for absolute bindings. These bindings are made with a flow-variable that you can use after the opcua-client for instance in the switch-node with the statement flow.copiedID for msg.topic.</span>
+            <span>Copy item-id to clipboard for relative bindings. These bindings are made with a flow-variable that you can use after the opcua-client for instance in the switch-node with the statement flow.copiedID for msg.topic.</span>
         </li>
         <li>
             <code><i class="fa fa-clipboard" style="margin:4px"></i></code>
@@ -273,11 +236,11 @@
         </li>
         <li>
             <code>Node-Output: </code>
-            <ul>
-                <li>msg.topic: item-id with datatype</li>
-                <li>msg.label: item-id used for instance for the gauge-ui-element</li>
-                <li>msg.dataType: item-dataType</li>
-            </ul>
+            <span>msg.topic with namespace-index (ns), string-identifier (s) and dataype like "ns=1;s=MyVariable2;datatype=Double"</span>
+        </li>
+        <li>
+            <code>Node-Input: </code>
+            <span>Nothing. It overwrites the msg.topic.</span>
         </li>
       </ul> 
 </script>
