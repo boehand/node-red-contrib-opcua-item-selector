@@ -4,6 +4,10 @@
   "description": "A Node-RED node for selecting items from an opcua-server via live-browsing.",
   "author": "Andreas Böhm",
   "organization": "STFI, Chemnitz (Germany)",
+  "repository": {
+        "type": "git",
+        "url": "https://github.com/boehand/node-red-contrib-opcua-item-selector.git"
+    },
   "license": "Apache-2.0",
   "keywords": [
     "node-red",
@@ -14,6 +18,7 @@
     "node-opcua"
   ],
   "node-red": {
+    "version": ">=2.0.0",
     "nodes": {
       "node-opcua-item-selector": "node-opcua-item-selector.js"
     }
