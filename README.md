@@ -24,7 +24,7 @@ The `OpcUa-ItemSelector` node has the following configuration options:
        autoplay 
        loop 
        muted 
-       playsinline 
+       playsinline
        style="max-width: 100%;">
 </video>
 
