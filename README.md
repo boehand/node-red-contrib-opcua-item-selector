@@ -3,6 +3,8 @@
 
 This repository contains the code base for `OPC UA Item Selector`, a third-party node for [node-red-contrib-opcua](https://flows.nodered.org/node/node-red-contrib-opcua).
 
+![Demo](docs/Video_Node-RED-OPC-UA-Item-Selector_Part1.webp)
+
 ## Configuration Options
 
 The `OpcUa-ItemSelector` node has the following configuration options:
@@ -18,6 +20,6 @@ The `OpcUa-ItemSelector` node has the following configuration options:
 - **Node-Output**: msg.topic with namespace-index (ns), string-identifier (s) and dataype like `ns=1;s=MyVariable2;datatype=Double`
 - **Node-Input**: Nothing. It overwrites the `msg.topic`.
 
-### Video of the functionalities
+### Additional Video of the functionalities
 
-[![Video of the functionalities](https://img.youtube.com/vi/cqTjIsY-A-0/maxresdefault.jpg)](https://youtu.be/cqTjIsY-A-0)
+![Demo](docs/Video_Node-RED-OPC-UA-Item-Selector_Part2.webp)
