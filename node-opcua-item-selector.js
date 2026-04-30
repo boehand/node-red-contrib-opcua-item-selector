@@ -19,7 +19,7 @@ module.exports = function(RED) {
         
             const client = OPCUAClient.create({ endpointMustExist: false });
             await client.connect(endpointUrl);
-            if (req.query.endpoint.login) {
+            if (req.query.endpoint.login && req.query.endpoint.credentials) {
                 userIdentity.userName = req.query.endpoint.credentials.user;
                 userIdentity.password = req.query.endpoint.credentials.password;
                 userIdentity.type = client.UserTokenType.UserName; // New TypeScript API parameter
@@ -113,8 +113,13 @@ module.exports = function(RED) {
         node.on('input', function(msg) {
 
             var endpoint=RED.nodes.getNode(config.endpoint);
-            // see undefined credentials
-            if(typeof endpoint.credentials=="undefinded")
+            // Check if endpoint exists and has credentials
+            if(!endpoint)
+            {
+                //node.error("OPC UA Endpoint not configured or not found");
+                return;
+            }
+            if(typeof endpoint.credentials=="undefined")
             {
                 endpoint["credentials"]={user: undefined, password: undefined};
             }
